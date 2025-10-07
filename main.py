@@ -2,15 +2,23 @@ import csv
 
 def load_students(filename="students.csv"):
     students = []
+    expected = ["id","name","age","major"]
     try:
-        with open(filename, mode="r", newline="", encoding="utf-8") as file:
-            reader = csv.DictReader(file)
+        with open(filename, "r", newline="", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
             for row in reader:
-                if "age" in row and row["age"].isdigit():
-                    row["age"] = int(row["age"])
-                else:
-                    row["age"] = 0
-                students.append(row)
+                # nếu thiếu cột nào đó, bỏ qua dòng
+                if not all(k in row for k in expected):
+                    print("Bỏ qua dòng không hợp lệ:", row)
+                    continue
+                id_ = str(row["id"]).strip()
+                name = row["name"].strip()
+                try:
+                    age = int(row["age"])
+                except Exception:
+                    age = 0
+                major = row["major"].strip()
+                students.append({"id": id_, "name": name, "age": age, "major": major})
     except FileNotFoundError:
         print("Chưa có file dữ liệu, bắt đầu với danh sách rỗng.")
     return students
@@ -93,13 +101,15 @@ def menu():
     students = load_students()
 
     while True:
-        print("\n===== MENU QUẢN LÝ SINH VIÊN =====")
+        print("\n*** MENU ỨNG DỤNG QUẢN LÝ SINH VIÊN ***")
+        print("=======================================")
         print("1. Thêm sinh viên")
         print("2. Cập nhật sinh viên")
         print("3. Xóa sinh viên")
         print("4. Tìm kiếm sinh viên theo tên")
         print("5. Hiển thị danh sách sinh viên")
-        print("6. Lưu & Thoát")
+        print("6. Lưu dữ liệu & Thoát")
+        print("=======================================")
 
         choice = input("Chọn chức năng (1-6): ")
 
